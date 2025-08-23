@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tracklist Merger (Beta)
 // @author       User:Martin@MixesDB (Subfader@GitHub)
-// @version      2025.08.21.5
+// @version      2025.08.21.7
 // @description  Change the look and behaviour of certain DJ culture related websites to help contributing to MixesDB, e.g. add copy-paste ready tracklists in wiki syntax.
 // @homepageURL  https://www.mixesdb.com/w/Help:MixesDB_userscripts
 // @supportURL   https://discord.com/channels/1258107262833262603/1261652394799005858
@@ -136,18 +136,15 @@ function normalizeTrackTitlesForMatching( text ) {
  * Return normalized variants for all artist combinations
  */
 function getTrackMatchNorms( text ) {
-    text = text.trim().replace(/\s*\[[^\]]+\]\s*/g, ' ');
+    text = normalizeTrackTitlesForMatching( text );
 
     var parts = text.split(" - ");
     if (parts.length < 2) {
-        return [ normalizeTrackTitlesForMatching( text ) ];
+        return [ text ];
     }
 
-    var artists = parts.shift()
-        .replace(/\s*(?:Ft|Feat\.?|Featuring|\baka\b)\s+/gi, " & ")
-        .replace(/\s*,\s*/g, " & ");
+    var artistsArr = parts.shift().split(/\s*&\s*/).map(a => a.trim()).filter(Boolean);
     var title = parts.join(" - ");
-    var artistsArr = artists.split(/\s*(?:&|\band\b|\baka\b)\s*/i).map(a => a.trim()).filter(Boolean);
     artistsArr = [...new Set(artistsArr)];
 
     var combos = [];
@@ -155,7 +152,7 @@ function getTrackMatchNorms( text ) {
     function combine(start, combo) {
         if (combo.length) {
             var artistStr = combo.slice().sort((a,b) => a.localeCompare(b)).join(" & ");
-            combos.push( normalizeTrackTitlesForMatching( artistStr + " - " + title ) );
+            combos.push( artistStr + " - " + title );
         }
         for (var i = start; i < artistsArr.length; i++) {
             combo.push( artistsArr[i] );
@@ -167,7 +164,7 @@ function getTrackMatchNorms( text ) {
     combine(0, []);
 
     if (!combos.length) {
-        combos.push( normalizeTrackTitlesForMatching( text ) );
+        combos.push( text );
     }
 
     return [...new Set(combos)];
