@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tracklist Merger (Beta)
 // @author       User:Martin@MixesDB (Subfader@GitHub)
-// @version      2025.08.23.8
+// @version      2025.08.23.10
 // @description  Change the look and behaviour of certain DJ culture related websites to help contributing to MixesDB, e.g. add copy-paste ready tracklists in wiki syntax.
 // @homepageURL  https://www.mixesdb.com/w/Help:MixesDB_userscripts
 // @supportURL   https://discord.com/channels/1258107262833262603/1261652394799005858
@@ -668,7 +668,7 @@ function mergeTracklists(original_arr, candidate_arr) {
  */
 function run_diff() {
     var text1 = $("#tl_original").val(),
-        text2 = $("#merge_result_tle").val(),
+        text2 = $("#merge_result_tle").val() || $("#merge_result").val(),
         text3 = $("#tl_candidate").val();
     if( text1 && text2 && text3 ) {
         $('#diffContainer').showTracklistDiffs({ text1, text2, text3 });
@@ -676,8 +676,10 @@ function run_diff() {
         if( pre.length ) {
             adjust_preHeights( pre );
         }
-        adjust_columnWidths();
+    } else {
+        $("#diffContainer td").remove();
     }
+    adjust_columnWidths();
 }
 
 
@@ -866,8 +868,8 @@ if( domain == "mixesdb.com" ) {
             run_merge( true );
         }
 
-        $("#tl_original, #merge_result_tle, #tl_candidate").on('input', adjust_columnWidths);
-        adjust_columnWidths();
+        $("#tl_original, #merge_result, #merge_result_tle, #tl_candidate").on('input', run_diff);
+        run_diff();
     });
 }
 
