@@ -690,7 +690,7 @@ function calcSimilarity(a, b) {
  */
 function run_diff() {
     var text1 = $("#tl_original").val(),
-        text2 = $("#merge_result_tle").val(),
+        text2 = $("#merge_result_tle").val() || $("#merge_result").val(),
         text3 = $("#tl_candidate").val();
     if( text1 && text2 && text3 ) {
         $('#diffContainer').showTracklistDiffs({ text1, text2, text3 });
@@ -890,7 +890,8 @@ if( domain == "mixesdb.com" ) {
             run_merge( true );
         }
 
-        $("#tl_original, #merge_result_tle, #tl_candidate").on('input', run_diff);
+        $("#tl_original, #merge_result, #merge_result_tle, #tl_candidate").on('input', run_diff);
+
         run_diff();
     });
 }
