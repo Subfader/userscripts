@@ -1315,6 +1315,17 @@ function convertUTCDateToLocalDate(date) {
 /* END Timeago */
 
 
+/* Toggle click */
+waitForKeyElements(".mdb-toggle", function( jNode ) {
+    jNode.on("click", function(){
+        var toggleId = $(this).attr("data-toggleid");
+        $("#"+toggleId).slideToggle( msWaitToggle );
+        $(this).toggleClass("selected");
+        if( toggleId == "mdb-fileDetails" ) $("#mdb-fileDetails textarea").select().focus();
+    });
+});
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * End
