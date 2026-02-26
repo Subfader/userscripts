@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Player Checker (by MixesDB)
 // @author       User:Martin@MixesDB (Subfader@GitHub)
-// @version      2026.02.26.2
+// @version      2026.02.26.4
 // @description  Change the look and behaviour of certain DJ culture related websites to help contributing to MixesDB, e.g. add copy-paste ready tracklists in wiki syntax.
 // @homepageURL  https://www.mixesdb.com/w/Help:MixesDB_userscripts
 // @supportURL   https://discord.com/channels/1258107262833262603/1261652394799005858
@@ -98,8 +98,15 @@ setTimeout(function() {
     // wrapper configuration (domain-based)
     let wrapper;
     let wrapper_append;
+    let wrapper_context = "";
 
     switch (visitDomain) {
+        case "finn-johannsen.de":
+            wrapper         = "iframe.mdb-processed-toolkit:first";
+            wrapper_append  = "before";
+            wrapper_context = ".post";
+            break;
+
         default:
             wrapper         = "iframe.mdb-processed-toolkit:first";
             wrapper_append  = "before";
@@ -108,13 +115,34 @@ setTimeout(function() {
     // let's go
     if( max_toolboxIterations > 0 ) {
 
-        // visible iframes
-        waitForKeyElements("iframe:not(.mdb-processed-toolkit)", function( jNode ) {
-            var iframe = jNode;
-            iframe.addClass("mdb-processed-toolkit");
+        if( wrapper_context != "" ) {
+            $(wrapper_context).each(function() {
+                var context = $(this);
+                var iframes = context.find("iframe:not(.mdb-processed-toolkit)");
 
-            getToolkit_fromIframe( iframe, "playerUrl", "detail page", wrapper, wrapper_append, titleText, "", max_toolboxIterations );
-        });
+                if( iframes.length === 0 ) {
+                    return;
+                }
+
+                toolboxIteration = 0;
+
+                iframes.each(function() {
+                    var iframe = $(this);
+                    iframe.addClass("mdb-processed-toolkit");
+
+                    var wrapper_thisContext = context.find( wrapper );
+                    getToolkit_fromIframe( iframe, "playerUrl", "detail page", wrapper_thisContext, wrapper_append, titleText, "", iframes.length );
+                });
+            });
+        } else {
+            // visible iframes
+            waitForKeyElements("iframe:not(.mdb-processed-toolkit)", function( jNode ) {
+                var iframe = jNode;
+                iframe.addClass("mdb-processed-toolkit");
+
+                getToolkit_fromIframe( iframe, "playerUrl", "detail page", wrapper, wrapper_append, titleText, "", max_toolboxIterations );
+            });
+        }
     }
 }, playerUrlItems_timeout );
 
