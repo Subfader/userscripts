@@ -1230,6 +1230,44 @@ waitForKeyElements("a.mdb-mixesdbLink.edit", function( jNode ) {
     }
 });
 
+function toolkit_applySiteHasTlToEditPage( siteHasTl="" ) {
+    if( /^(incomplete|complete)$/.test(siteHasTl) === false ) {
+        return;
+    }
+
+    var textarea = $("textarea#wpTextbox1");
+
+    if( !textarea.length ) {
+        return;
+    }
+
+    var currentText = textarea.val(),
+        hasTracklistCompleteCategory = currentText.indexOf("[[Category:Tracklist: complete]]") !== -1,
+        skipCategoryUpdate = (siteHasTl == "incomplete" && hasTracklistCompleteCategory);
+
+    if( !skipCategoryUpdate ) {
+        textarea.val(
+            currentText.replace(
+                "[[Category:Tracklist: none]]",
+                "[[Category:Tracklist: " + siteHasTl + "]]"
+            )
+        );
+    }
+
+    if( skipCategoryUpdate ) {
+        return;
+    }
+
+    $("#afterTextbox1 a.button-after").removeClass("op1");
+
+    var buttonSelector = siteHasTl == "incomplete" ? "a#button-after-TLi" : "a#button-after-TLc",
+        targetButton = $(buttonSelector);
+
+    if( targetButton.length ) {
+        targetButton.addClass("op1");
+    }
+}
+
 // MixesDB edit page: apply siteHasTl query parameter to categories and active button
 d.ready(function () {
     if (domain != "mixesdb.com" || typeof mw === "undefined" || !mw.config) {
@@ -1244,37 +1282,8 @@ d.ready(function () {
     if ((wgAction == "edit" || wgAction == "submit")
         && wgNamespaceNumber == 0
         && wgTitle != "Main Page"
-        && /^(incomplete|complete)$/.test(siteHasTl)
     ) {
-        var textarea = $("textarea#wpTextbox1");
-
-        if (textarea.length) {
-            var currentText = textarea.val(),
-                hasTracklistCompleteCategory = currentText.indexOf("[[Category:Tracklist: complete]]") !== -1,
-                skipCategoryUpdate = (siteHasTl == "incomplete" && hasTracklistCompleteCategory);
-
-            if( !skipCategoryUpdate ) {
-                textarea.val(
-                    currentText.replace(
-                        "[[Category:Tracklist: none]]",
-                        "[[Category:Tracklist: " + siteHasTl + "]]"
-                    )
-                );
-            }
-
-            if( skipCategoryUpdate ) {
-                return;
-            }
-
-            $("#afterTextbox1 a.button-after").removeClass("op1");
-
-            var buttonSelector = siteHasTl == "incomplete" ? "a#button-after-TLi" : "a#button-after-TLc",
-                targetButton = $(buttonSelector);
-
-            if (targetButton.length) {
-                targetButton.addClass("op1");
-            }
-        }
+        toolkit_applySiteHasTlToEditPage( siteHasTl );
     }
 });
 
