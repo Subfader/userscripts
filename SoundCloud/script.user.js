@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SoundCloud (by MixesDB)
 // @author       User:Martin@MixesDB (Subfader@GitHub)
-// @version      2026.08.09.11
+// @version      2026.08.09.12
 // @description  Change the look and behaviour of certain DJ culture related websites to help contributing to MixesDB, e.g. add copy-paste ready tracklists in wiki syntax.
 // @homepageURL  https://www.mixesdb.com/w/Help:MixesDB_userscripts
 // @supportURL   https://discord.com/channels/1258107262833262603/1261652394799005858
@@ -29,6 +29,13 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+// Single source of truth - do NOT re-declare further down. Both values are read by the CSS
+// loading in the "Constants" section below, and `var` redeclaration silently reassigns, so a
+// second block would win and make bumping this one a no-op (that is exactly what happened
+// before: the two numbers drifted apart unnoticed).
+// Must also stay ABOVE the frame handling, which returns early for frames we skip: toolkit.js
+// reads the bare global `scriptName` from a d.ready() callback that fires in *every* frame,
+// so leaving it unset there would throw a ReferenceError.
 var cacheVersion = 76,
     scriptName = "SoundCloud";
 window.scriptName = scriptName; // toolkit.js reads this global directly
@@ -42,7 +49,7 @@ logVar( "cacheVersion", cacheVersion );
  *
  * All off in the shipped script - flip one to true while working on a feature.
  * They sit on window because the code reading them lives in the @require'd script.funcs.js,
- * which cannot see this IIFE's scope (same reason as window.scriptName further down).
+ * which cannot see this IIFE's scope (same reason as window.scriptName just above).
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -179,12 +186,6 @@ if( isTopFrame ) {
  * Constants
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-var cacheVersion = 76,
-    scriptName = "SoundCloud";
-window.scriptName = scriptName; // toolkit.js reads this global directly
-logVar( "scriptName", scriptName );
-logVar( "cacheVersion", cacheVersion );
 
 const xedItemsStorageKey = 'mdb-soundcloud-xed-items',
       hideXedItemsKey = 'mdb-soundcloud-hide-xed',
