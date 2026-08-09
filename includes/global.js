@@ -328,20 +328,23 @@ function urlIsTidSubmitCompatible( thisUrl ) {
 
 // makeTidSubmitUrl
 function makeTidSubmitUrl( playerUrl, keywords="" ) {
-    var keyowrds = normalizeTitleForSearch( keywords ),
+    // Single place where the TID keywords get normalized, so every submit link sends the
+    // same terms no matter which caller built it. Callers pass the raw title.
+    // normalizeTitleForSearch() returns undefined on empty input - keep that out of the URL.
+    var keywords_normalized = normalizeTitleForSearch( keywords ) || "",
         youtubeId = getYoutubeIdFromUrl( playerUrl );
 
     if( youtubeId && /(?:^|\.)youtube(?:-nocookie)?\.com$|(?:^|\.)youtu\.be$/i.test( new URL( playerUrl, "https://www.youtube.com" ).hostname ) ) {
         playerUrl = "https://www.youtube.com/watch?v=" + youtubeId;
     }
 
-    return 'https://trackid.net/submiturl?requestUrl='+encodeURIComponent( playerUrl )+'&keywords='+encodeURIComponent( keywords );
+    return 'https://trackid.net/submiturl?requestUrl='+encodeURIComponent( playerUrl )+'&keywords='+encodeURIComponent( keywords_normalized );
 }
 
 // makeTidSubmitLink
 function makeTidSubmitLink( thisUrl, keywords="", linkText_mode="text" ) {
-    var keyowrds = normalizeTitleForSearch( keywords ),
-        tidUrl = makeTidSubmitUrl( thisUrl, keywords ),
+    // keywords are normalized by makeTidSubmitUrl()
+    var tidUrl = makeTidSubmitUrl( thisUrl, keywords ),
         text = "Submit this player URL to TrackId.net",
         linkText = text;
 

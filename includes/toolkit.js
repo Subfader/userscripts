@@ -1237,8 +1237,7 @@ function toolkit_addTidLink( playerUrl, title ) {
                 // avoid undefined error
                 if( ( data.error && data.error.code == "notfound" )  ) {
                     // no result
-                    var keywords = normalizeTitleForSearch( title ),
-                        tidLink = makeTidSubmitLink( playerUrl, keywords, "text" );
+                    var tidLink = makeTidSubmitLink( playerUrl, title, "text" );
                     if( tidLink ) {
                         jNode.append( '<li class="mdb-toolkit-tidLink filled">'+tidLink+'</li>' ).show();
                     }

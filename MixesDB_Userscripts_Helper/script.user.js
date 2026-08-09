@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MixesDB Userscripts Helper (by MixesDB)
 // @author       User:Martin@MixesDB (Subfader@GitHub)
-// @version      2026.08.09.5
+// @version      2026.08.09.6
 // @description  Change the look and behaviour of the MixesDB website to enable feature usable by other MixesDB userscripts.
 // @homepageURL  https://www.mixesdb.com/w/Help:MixesDB_userscripts
 // @supportURL   https://discord.com/channels/1258107262833262603/1293952534268084234
@@ -9,8 +9,8 @@
 // @downloadURL  https://raw.githubusercontent.com/mixesdb/userscripts/refs/heads/main/MixesDB_Userscripts_Helper/script.user.js
 // @require      https://cdn.rawgit.com/mixesdb/userscripts/refs/heads/main/includes/jquery-3.7.1.min.js
 // @require      https://cdn.rawgit.com/mixesdb/userscripts/refs/heads/main/includes/waitForKeyElements.js
-// @require      https://raw.githubusercontent.com/mixesdb/userscripts/refs/heads/main/includes/global.js?v-MixesDB_Userscripts_Helper_15
-// @require      https://raw.githubusercontent.com/mixesdb/userscripts/refs/heads/main/includes/toolkit.js?v-MixesDB_Userscripts_Helper_8
+// @require      https://raw.githubusercontent.com/mixesdb/userscripts/refs/heads/main/includes/global.js?v-MixesDB_Userscripts_Helper_16
+// @require      https://raw.githubusercontent.com/mixesdb/userscripts/refs/heads/main/includes/toolkit.js?v-MixesDB_Userscripts_Helper_9
 // @match        https://www.mixesdb.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=mixesdb.com
 // @noframes
@@ -164,16 +164,18 @@ d.ready(function(){ // needed for mw.config
                 playerUrl = playerUrl.replace( "hearthis.audio", "hearthis.at" );
             }
 
+            // raw titles - makeTidSubmitUrl() normalizes them
+
             // if mix page
             if( wgNamespaceNumber==0 && wgTitle!="Main Page" ) {
-                keywords = getKeywordsFromTitle( $("h1#firstHeading") )
+                keywords = $("h1#firstHeading").text();
             }
 
             // if Explorer/Mixes
             if( wgNamespaceNumber==4 && wgPageName=="MixesDB:Explorer/Mixes" ) {
                 var explorerResult = playerWrapper.closest(".explorerResult"),
                     explorerResult_title = $(".playerLink", explorerResult).attr("title");
-                keywords = normalizeTitleForSearch( explorerResult_title );
+                keywords = explorerResult_title;
             }
 
             if( playerTidCompatible == "true" ) {
